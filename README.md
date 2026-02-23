@@ -1,32 +1,62 @@
 # blackroad-motion-planner
 
-[![GitHub](https://img.shields.io/badge/GitHub-BlackRoad-OS-purple?style=for-the-badge&logo=github)](https://github.com/BlackRoad-OS/blackroad-motion-planner)
-[![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)](https://github.com/BlackRoad-OS/blackroad-motion-planner)
-[![BlackRoad](https://img.shields.io/badge/BlackRoad-OS-black?style=for-the-badge)](https://blackroad.io)
+> Robot/drone motion planning with A\* pathfinding, waypoint management, and collision detection.
 
-# 🖤🛣️ BlackRoad Motion Planner
+## Features
 
-Part of the BlackRoad Product Empire - 350+ enterprise solutions
+- **A\* pathfinding** on a continuous grid with configurable resolution
+- **Douglas-Peucker smoothing** to reduce path complexity
+- **Collision detection** with clearance margin checking
+- **Obstacle management** (static, dynamic, no-fly zones)
+- **ASCII map visualization** of planning space
+- **SQLite persistence** for waypoints, obstacles, and missions
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-./blackroad-motion-planner.sh
+pip install -e .
+
+# Add waypoints
+python src/motion_planner.py add-waypoint depot 0 0
+python src/motion_planner.py add-waypoint target 25 30 --speed 2.0
+
+# Add obstacles
+python src/motion_planner.py add-obstacle 10 15 3.0 --kind static
+
+# Plan a path
+python src/motion_planner.py plan depot target
+
+# Check for collisions
+python src/motion_planner.py check-collision <mission_id>
+
+# Visualize the space
+python src/motion_planner.py visualize --mission-id <mission_id>
+
+# List all missions
+python src/motion_planner.py list-missions
 ```
 
-## 🎨 BlackRoad Design System
+## CLI Reference
 
-- **Hot Pink**: #FF1D6C
-- **Amber**: #F5A623  
-- **Electric Blue**: #2979FF
-- **Violet**: #9C27B0
+| Command | Description |
+|---------|-------------|
+| `add-waypoint NAME X Y [--z] [--speed] [--hover]` | Register a named waypoint |
+| `add-obstacle CX CY RADIUS [--height] [--kind]` | Add an obstacle |
+| `plan START GOAL` | Compute A\* path between two waypoints |
+| `check-collision MISSION_ID [--clearance]` | Check path safety |
+| `list-waypoints` | Show all waypoints |
+| `list-missions` | Show all planned missions |
+| `visualize [--mission-id]` | ASCII map of planning space |
 
-## 📚 Documentation
+## Algorithms
 
-Full docs: https://docs.blackroad.io
+- **A\*** — octile heuristic, 8-directional movement, grid resolution configurable (default 0.5m)
+- **Douglas-Peucker** — simplifies raw A\* output; default ε=0.4m
+- **Collision Check** — iterates path points against all obstacle radii + clearance margin
 
-## 🖤 BlackRoad Empire
+## Development
 
-Part of 350+ products across 46 categories. Built with ∞ vision.
-
-**BlackRoad OS, Inc.** | Built with Claude
+```bash
+pip install pytest pytest-cov flake8
+pytest tests/ -v --cov=src
+```
